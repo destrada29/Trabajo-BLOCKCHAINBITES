@@ -5,6 +5,7 @@
     "hardhat": "^2.22.2"
   },
   "dependencies": {
+    "@ethereumjs/trie": "^6.2.0",
     "bip32": "^4.0.0",
     "bip39": "^3.1.0",
     "dotenv": "^16.4.5",
