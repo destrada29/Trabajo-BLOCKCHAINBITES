@@ -5,21 +5,18 @@ async function main() {
 
   await trie.put(buffer("0xblock01"), buffer("0xblock01Value"));
   await trie.put(buffer("0xblock01B"), buffer("0xblock012Value"));
-  await trie.put(buffer("0xblock019001"), buffer("0xblock012001Value"));
-  await trie.put(buffer("0xblock01X002"), buffer("0xblock012002Value"));
-  await trie.put(buffer("0xblock012003"), buffer("0xblock012003Value"));
-  await trie.put(
-    buffer("0xblock012004AAAAAA"),
-    buffer("0xblock012004AAAAAAValue")
-  );
-  await trie.put(
-    buffer("0xblock012004AAAAAB"),
-    buffer("0xblock012004AAAAABValue")
-  );
-  await trie.put(
-    buffer("0xblock012004BBBBBB"),
-    buffer("0xblock012004BBBBBBValue")
-  );
+  await trie.put(buffer("0xblock01BAV"), buffer("0xblock012001Value"));
+  await trie.put(buffer("0xblock01BDE"), buffer("0xblock012001Value"));
+
+  var node = await trie.findPath(buffer("0xblock01B"));
+
+  console.log(node);
+
+  var node = await trie.findPath(buffer("0xblock01BDE"));
+
+  console.log(node);
+
+  console.log(buffer(trie.root()));
 }
 
 function buffer(data) {

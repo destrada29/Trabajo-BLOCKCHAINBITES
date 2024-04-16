@@ -9,9 +9,9 @@ module.exports = {
       url: "http://127.0.0.1:8545/",
       accounts: [process.env.PRIVATE_KEY],
     },
-    amoy: {
-      url: process.env.AMOY_TESNET_URL,
-      accounts: [process.env.PRIVATE_KEY || ""],
+    moonbase: {
+      url: process.env.MOONBASE_TESTNET_URL,
+      accounts: [process.env.PRIVATE_KEY],
       timeout: 0,
       gas: "auto",
       gasPrice: "auto",

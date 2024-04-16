@@ -31,5 +31,5 @@ async function deployContract() {
   console.log("Contract Address", await contract.getAddress());
   // 0x171a385fEf9422F78925D53ec13586689b31dcAd
 }
-deployContract();
+// deployContract();
 // calculateAddress();
