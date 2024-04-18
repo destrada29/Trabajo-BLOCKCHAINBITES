@@ -30,6 +30,7 @@ contract Ejercicio_4 {
     // Capture the person who published the smart contract in the constructor
     // The validation error for this modifier should be "You are not the owner."
     //
+    //  - npx hardhat test test/EjercicioTesting_4.js
     // ROLES:
     bytes32 public constant ROLE_ONE = keccak256("ROLE_ONE");
     bytes32 public constant ROLE_TWO = keccak256("ROLE_TWO");
@@ -47,7 +48,10 @@ contract Ejercicio_4 {
         // nothing here
     }
 
-    function grantRole(address _wallet, bytes32 _role) public /** onlyOwner  */{
+    function grantRole(
+        address _wallet,
+        bytes32 _role
+    ) public /** onlyOwner  */ {
         //... IMPLEMENT THIS
     }
 
