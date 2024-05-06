@@ -93,4 +93,22 @@ var { ECC } = require("../learning/0_EllipticCurve");
 var a = -3;
 var p = 17;
 
-// module.exports = { Sx: , Sy: , QBx: , QBy:  };
+class Point {
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
+    }
+  }
+
+
+var G = new Point(12, 9); 
+var nB = 13; 
+var QA = new Point(0, 15); 
+
+var ecc = new ECC(a, 4, p);
+
+var QB = ecc.scalarMultiplication(nB, G);
+
+var S = ecc.scalarMultiplication(nB, QA);
+
+module.exports = { Sx: S.x, Sy: S.y, QBx: QB.x, QBy: QB.y };

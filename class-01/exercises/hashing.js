@@ -35,3 +35,40 @@
  */
 
 // module.exports = { answerOne: , answerTwo: };
+
+
+
+
+
+
+var { keccak256 } = require("js-sha3");
+
+function Respuesta_1() {
+    const probabilityOfCollision = 0.5;
+    const hashLength = 13;
+    const totalUniqueHashes = Math.pow(2, hashLength);
+  
+    // Calcular el número necesario de secretos únicos
+    const numberOfSecrets = Math.ceil(Math.log(1 - probabilityOfCollision) / Math.log(1 - 1 / totalUniqueHashes));
+  
+    return numberOfSecrets;
+  }
+
+function Respuesta_2() {
+    const hashSize = Math.pow(2, 13);
+    const probability = 0.8;
+    return Math.ceil(Math.sqrt(2 * hashSize * Math.log(1 / (1 - probability))));
+}
+
+
+const hashSize = Math.pow(2, 13);
+const answerOne = Respuesta_1(); 
+const answerTwo = Respuesta_2(); 
+var hashAnswerOne = keccak256(String(answerOne));
+var hashAnswerTwo = keccak256(String(answerTwo));
+console.log(`Answer One: ${hashAnswerOne}`);
+console.log(`Answer Two: ${hashAnswerTwo}`);
+
+module.exports = { answerOne, answerTwo };
+
+

@@ -42,8 +42,15 @@ var { hash } = require("eth-crypto");
 var { mostCommonPasswords } = require("./utils");
 
 function findPassword(hashValue) {
-  // if (passwordFound) {return password;}
+  
+  for (let i = 0; i < mostCommonPasswords.length; i++) {
+    if (hash.keccak256(mostCommonPasswords[i]) == hashValue) {
+      return mostCommonPasswords[i];
+    }
+  }
   return "";
+  
 }
+findPassword("letmein");
 
 module.exports = { findPassword };

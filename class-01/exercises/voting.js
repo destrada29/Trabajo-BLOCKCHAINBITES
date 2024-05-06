@@ -37,7 +37,16 @@ var {
  * @return {string} Returns a stringified version of the encrypted vote
  */
 async function encryptVote(voterPrivateKey, candidate, officialPublicKey) {
-  return "";
+  const signature = sign(voterPrivateKey, hash.keccak256(candidate));
+
+  // Encrypt the signed vote with the official's public key
+  var payload = JSON.stringify({
+    message: candidate,
+    signature,
+  });
+  var encryptedObject = await encryptWithPublicKey(officialPublicKey, payload);
+  // Return the encrypted vote
+  return cipher.stringify(encryptedObject);
 }
 
 /**
@@ -54,7 +63,29 @@ async function decryptVoteAndCount(
   encryptedVotes,
   officialPrivateKey
 ) {
-  return {};
+  const votesCount = {};
+  for (let i = 0; i < encryptedVotes.length; i++) {
+    var encrypted = cipher.parse(encryptedVotes[i]);
+    var decrypted = await decryptWithPrivateKey(officialPrivateKey, encrypted);
+    var decryptedObject = JSON.parse(decrypted);
+    var publicKeyRecovered = recoverPublicKey(decryptedObject.signature, hash.keccak256(decryptedObject.message));
+
+    if (publicKeyVoters.includes(publicKeyRecovered)) {
+
+      if (!(publicKeyRecovered in votesCount)) {
+        votesCount[publicKeyRecovered] = 1;
+
+      } else {
+        votesCount[publicKeyRecovered] += 1;
+      }
+
+
+    }
+
+  }
+
+  return votesCount;
 }
+
 
 module.exports = { encryptVote, decryptVoteAndCount };

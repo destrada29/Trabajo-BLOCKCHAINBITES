@@ -45,44 +45,53 @@ pragma solidity 0.8.24;
  */
 
 contract Ejercicio_2 {
-    // 1
-    // definir un 'admin'
-    // no cambiar
+
     address public admin = 0x08Fb288FcC281969A0BBE6773857F99360f2Ca06;
+    mapping(address => bool) public listaBlanca;
+    uint256 public tiempoLimite = block.timestamp + 30 days;
+    bool public pausado = false;
 
     modifier soloAdmin() {
-        // definir logica
+        require(msg.sender == admin, "No eres el admin");
         _;
     }
 
-    // function metodoAccesoProtegido() {
-    //     // ...logica
-    // }
+    modifier soloListaBlanca() {
+        require(listaBlanca[msg.sender], "Fuera de la lista blanca");
+        _;
+    }
 
-    // 2
-    // definir lista blanca con un mapping
-    // mapping listaBlanca;
-    // modifier soloListaBlanca
+    modifier soloEnTiempo() {
+        require(block.timestamp <= tiempoLimite, "Fuera de tiempo");
+        _;
+    }
 
-    // function metodoPermisoProtegido
+    modifier pausa() {
+        require(!pausado, "El metodo esta pausado");
+        _;
+    }
 
-    // function incluirEnListaBlanca
+    function metodoAccesoProtegido() public soloAdmin {
+        
+    }
 
-    // 3
-    // definir un rango de tiempo cualquiera (e.g. hoy + 30 days)
-    // En solidity se cumple que: 1 days = 86400 seconds
-    uint256 public tiempoLimite = block.timestamp + 30 days;
+    function incluirEnListaBlanca(address usuario) public soloAdmin {
+        listaBlanca[usuario] = true;
+    }
 
-    // modifier soloEnTiempo
+    function metodoPermisoProtegido() public soloListaBlanca {
+        
+    }
 
-    // function metodoTiempoProtegido
+    function metodoTiempoProtegido() public soloEnTiempo {
+        
+    }
 
-    // 4
-    // definir un booleano para pausar
-    // bool public pausado;
-    // modifier pausa
+    function cambiarPausa() public soloAdmin {
+        pausado = true;
+    }
 
-    // function metodoPausaProtegido
-
-    // function cambiarPausa()
+    function metodoPausaProtegido() public pausa {
+        
+    }
 }

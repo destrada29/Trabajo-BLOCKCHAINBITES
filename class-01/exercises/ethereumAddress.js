@@ -17,14 +17,25 @@
  */
 
 //0. import 'elliptic' and 'js-sha3' libraries
-
+var { ec } = require("elliptic");
+var { keccak256 } = require("js-sha3");
 function getAddressFromPrivateKey(privateKey) {
-  // 1 - Initialize the secp256k1 curve
-  // 2 - Generate a new key pair
-  // 3 - Get the public key from the key pair (concatenate X and Y coordinates)
-  // 4 - Hash the public key using keccak256 and remove the first byte (0x04) from the public key
-  // 5 - Add the prefix '0x' to the hash and take the last 20 bytes (40 characters)
-  //   return address;
+
+
+
+  var EC = new ec("secp256k1");
+  var bobKeyPair = EC.keyFromPrivate(privateKey);
+  var publicKey = bobKeyPair.getPublic("hex");
+  var publicKeyBytes = Buffer.from(publicKey, "hex");
+  publicKeyBytes = publicKeyBytes.slice(1);
+  publicKey = keccak256(publicKeyBytes);
+
+ 
+  var ethereumAddress = "0x" + publicKey.slice(-40);
+  return ethereumAddress;
+  
 }
+
+
 
 module.exports = { getAddressFromPrivateKey };
