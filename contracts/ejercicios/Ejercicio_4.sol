@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import "hardhat/console.sol";
-
 contract Ejercicio_4 {
     address public owner;
     bytes32 public constant ROLE_ONE = keccak256("ROLE_ONE");
