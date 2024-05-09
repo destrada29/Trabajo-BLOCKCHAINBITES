@@ -180,5 +180,5 @@ Realizar esta tarea y guardar la información solicitada en este mismo archivo e
 2. Vas a publicar el contrato `HackerMoneda.sol` en la red Moonbase con las siguientes consideraciones:
    - En vez de enviar `1 ether`, solo envía `1000` al contrato `Moneda.sol` cuando se hace el llamado al método `flip()` desde el método `attack()`.
 3. Ejecuta el método `attack()` del contrato `HackerMoneda.sol`. La operación debe ser exitosa y el contrato `HackerMoneda.sol` debería tener ahora un balance de `2000`
-4. Copiar aquí el address del contrato `Moneda.sol` en Moonbase:
-5. Copiar aquí el address del contrato `HackerMoneda.sol` de Moonbase:
+4. Copiar aquí el address del contrato `Moneda.sol` en Moonbase: 0x50e4dfBf4D1B21c1b2D4dCC481624AF222413848
+5. Copiar aquí el address del contrato `HackerMoneda.sol` de Moonbase: 0x92fb8dD450FE042956D630Dc585627d6335965f6

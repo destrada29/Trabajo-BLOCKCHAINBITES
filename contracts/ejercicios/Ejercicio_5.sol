@@ -63,9 +63,21 @@ pragma solidity 0.8.24;
  */
 
 contract Ejercicio_5 {
-    event SubastaCreada(bytes32 indexed _auctionId, address indexed _creator);
-    event OfertaPropuesta(address indexed _bidder, uint256 _bid);
-    event SubastaFinalizada(address indexed _winner, uint256 _bid);
+    struct Auction {
+        uint256 startTime;
+        uint256 endTime;
+        address highestBidder;
+        uint256 highestBid;
+        bool ended;
+    }
+
+    mapping(bytes32 => Auction) public auctions;
+    mapping(address => uint256) public pendingReturns;
+    bytes32[] public activeAuctions;
+
+    event SubastaCreada(bytes32 indexed auctionId, address indexed creator);
+    event OfertaPropuesta(address indexed bidder, uint256 bid);
+    event SubastaFinalizada(address indexed winner, uint256 bid);
 
     error CantidadIncorrectaEth();
     error TiempoInvalido();
@@ -75,41 +87,93 @@ contract Ejercicio_5 {
     error SubastaEnMarcha();
 
     function creaSubasta(uint256 _startTime, uint256 _endTime) public payable {
-        bytes32 _auctionId = _createId(_startTime, _endTime);
+        if (msg.value != 1 ether) revert CantidadIncorrectaEth();
+        if (_endTime <= _startTime) revert TiempoInvalido();
 
-        // emit SubastaCreada(_auctionId, msg.sender);
+        bytes32 auctionId = _createId(_startTime, _endTime);
+        Auction storage auction = auctions[auctionId];
+        auction.startTime = _startTime;
+        auction.endTime = _endTime;
+        auction.highestBidder = address(0);
+        auction.highestBid = 0;
+        auction.ended = false;
+        activeAuctions.push(auctionId);
+
+        emit SubastaCreada(auctionId, msg.sender);
     }
 
     function proponerOferta(bytes32 _auctionId) public payable {
-        // emit OfertaPropuesta(msg.sender, auction.offers[msg.sender]);
+        Auction storage auction = auctions[_auctionId];
+        if (auction.startTime == 0) revert SubastaInexistente();
+        if (block.timestamp < auction.startTime || block.timestamp > auction.endTime) revert FueraDeTiempo();
+        if (msg.value < auction.highestBid) revert OfertaInvalida();
+
+        if (auction.highestBidder != address(0)) {
+            pendingReturns[auction.highestBidder] += auction.highestBid;
+        }
+
+        auction.highestBidder = msg.sender;
+        auction.highestBid = msg.value;
+
+        if (auction.endTime - block.timestamp <= 5 minutes) {
+            auction.endTime += 5 minutes;
+        }
+
+        emit OfertaPropuesta(msg.sender, msg.value);
     }
 
     function finalizarSubasta(bytes32 _auctionId) public {
-        // emit SubastaFinalizada(auction.highestBidder, auction.highestBid);
+        Auction storage auction = auctions[_auctionId];
+        if (auction.startTime == 0) revert SubastaInexistente();
+        if (block.timestamp < auction.endTime) revert SubastaEnMarcha();
+        if (auction.ended) revert SubastaInexistente();
+
+        
+
+        removeSubasta(_auctionId);
+
+        auction.ended = true;
+        pendingReturns[auction.highestBidder] += auction.highestBid;
+        pendingReturns[auction.highestBidder]+= 1 ether;
+        emit SubastaFinalizada(auction.highestBidder, auction.highestBid);
     }
 
     function recuperarOferta(bytes32 _auctionId) public {
-        // payable(msg.sender).transfer(amount);
+        Auction storage auction = auctions[_auctionId];
+        if (!auction.ended) revert SubastaEnMarcha();
+
+        uint256 amount = pendingReturns[msg.sender];
+        if (amount > 0) {
+            pendingReturns[msg.sender] = 0;
+            payable(msg.sender).transfer(amount);
+        }
     }
 
-    function verSubastasActivas() public view returns (bytes32[] memory) {}
+    function verSubastasActivas() public view returns (bytes32[] memory) {
+        return activeAuctions;
+    }
 
-    ////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////   INTERNAL METHODS  ///////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////
+    function _createId(uint256 _startTime, uint256 _endTime) internal view returns (bytes32) {
+        return keccak256(abi.encodePacked(_startTime, _endTime, msg.sender, block.timestamp));
+    }
 
-    function _createId(
-        uint256 _startTime,
-        uint256 _endTime
-    ) internal view returns (bytes32) {
-        return
-            keccak256(
-                abi.encodePacked(
-                    _startTime,
-                    _endTime,
-                    msg.sender,
-                    block.timestamp
-                )
-            );
+    function removeSubasta(bytes32 auctionId) internal {
+    uint index = 0;
+    while (activeAuctions[index] != auctionId) {
+        index++;
+    }
+
+    
+    for (uint i = index; i<activeAuctions.length-1; i++){
+        activeAuctions[i] = activeAuctions[i+1];
+        }
+    activeAuctions.pop(); 
     }
 }
+
+
+
+
+
+
+
